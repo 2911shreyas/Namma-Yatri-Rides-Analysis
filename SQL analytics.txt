@@ -1,0 +1,126 @@
+-- query to find the total trips;
+select * from trips;
+
+select count(distinct tripid) from trips;
+
+-- find total drivers
+
+select count(distinct driverid) from trips;
+
+-- find total earnings
+
+select count(distinct fare) from trips;
+
+select min(fare) from trips;
+
+select max(fare) from trips;
+
+select avg(fare) from trips;
+
+select * from trips;
+
+
+-- duration greater than 20 min
+select * from trips where duration>20;
+
+select * from trips_details1;
+
+select sum(end_ride) from trips_details1;
+
+select count(otp_entered) from trips_details1;
+
+select * from payment;
+
+-- most used payment method
+select max(method) from payment;
+
+select * from loc;
+
+select max(assembly1) from loc;
+
+select * from trips_details4;
+
+-- which two locations had the most trips
+select trips_details4.loc_from,loc.assembly1
+from trips_details4
+left join
+loc
+on trips_details4.tripid = loc.id
+order by tripid desc
+limit 2 ;
+
+select * from loc;
+
+
+
+
+
+select * from trips;
+
+-- top 5 earning drivers
+select fare, driverid,duration from trips order by fare desc limit 5;
+
+
+-- highest duration of ride
+select driverid, duration from trips order by duration desc limit 5;
+
+-- most used payment method
+
+select * from payment;
+
+select max(method) from payment;
+
+-- which area got highest trips in which duration
+
+select * from duration;
+select * from loc;
+
+select duration.id,duration.duration,loc.assembly1
+from duration
+left join
+loc
+on duration.id = loc.id
+order by assembly1 desc limit 1;
+
+-- for lowest
+
+select duration.id,duration.duration,loc.assembly1
+from duration
+left join
+loc
+on duration.id = loc.id
+order by assembly1 limit 1;
+
+-- which duration got the highest fare 
+
+select * from duration;
+select * from trips;
+select duration,fare,tripid from trips order by fare desc limit 1;
+
+select * from trips_details4;
+
+-- from which location did the trips got cancelled by the driver
+
+select tripid,loc_from,driver_not_cancelled from trips_details4 where driver_not_cancelled = '0';
+
+-- top 10 earning drivers
+
+select * from trips;
+
+select driverid,fare from trips order by fare desc limit 10;
+
+-- which area got highest niumber of driver cancellations
+select * from(select *, rank() over(order by fare desc) as rnk
+from
+(select loc_from,count(*) - sum(driver_not_cancelled) fare
+from trips_details4
+group by loc_from)b)c
+where rnk=1;
+
+-- which area got highest niumber of customer cancellations
+select * from(select *, rank() over(order by fare desc) as rnk
+from
+(select loc_from,count(*) - sum(customer_not_cancelled) fare
+from trips_details4
+group by loc_from)b)c
+where rnk=1;
